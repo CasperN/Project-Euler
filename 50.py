@@ -76,15 +76,32 @@ def p44():
     Pk, for which their sum and difference are pentagonal and D = |Pk - Pj| is
     minimised; what is the value of D?
     """
-    pass
+    j = 1
+    for j in itertools.count(1):
+        pj = pent(j)
+        for i in range(1,j+1):
+            pi = pent(i)
+            pk = pi+pj
+            if is_pent(pk): # Note difference pk with pi or pj are pentagonal - need only sum
+                if is_pent(pi+pk):
+                    return pj
+                if is_pent(pj+pk):
+                    return pi
 
-def test(n):
-    prev = 0
-    for i in range(n):
-        pi = i*(3*n-1)/2
-        delta = pi - prev
-        prev = pi
-        print "i:{}\tp(i):{}\tDelta:{}".format(i, i*(3*n-1)/2, delta ).expandtabs(10)
+def pent(i):
+    return (3*i-1)*i/2
+
+def is_pent(x):
+    """
+    returns if x is a pentagonal number
+    I found this online lol
+    """
+    return ((1+(24 * x + 1)**.5)/6).is_integer()
+
+
+
+
+
 
 def p45(start = 144):
     """

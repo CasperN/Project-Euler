@@ -59,7 +59,7 @@ def p33():
     There are 4 nontrivial curious fractions of two digits, less than 1 in value
     Find the value of the denominator of the product in lowest common terms
     """
-    fracs = set()
+    fracs = []
     for den in range(2,10):
         for num in range(1,den):
             for x in range(10):
@@ -67,12 +67,11 @@ def p33():
                                 ( x ,num,den, x ),
                                 (num, x , x ,den),
                                 ( x ,num, x ,den)):
-                    if (b == d == 0) or (c == d == 0) or (a == c == 0):
-                        continue
+                    if (b == d == 0) or (a == c == 0):
+                        continue # Ignore trivial cases
                     Num,Den = ("%d%d %d%d"%(a,b,c,d)).split(' ')
                     if float(num)/den == float(Num)/float(Den):
-                        print('{}/{} = {}/{}'.format(num,den,Num,Den))
-                        fracs.add((num,den))
+                        fracs.append((num,den))
     product_num = reduce(lambda x,y: x*y,(x[0] for x in fracs) )
     product_den = reduce(lambda x,y: x*y,(x[1] for x in fracs) )
     return product_den / gcd(product_den,product_num)
