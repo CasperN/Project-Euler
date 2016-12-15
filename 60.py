@@ -248,66 +248,30 @@ def xor(a,b):
 
 def p60(n=10000,k=5):
     """
-    Find the lowest sum of a set of 5 primes for which the concatination of
+    Find the lowest sum of a set of k=5 primes for which the concatination of
     and two primes will result in a prime
     """
-    ps = primeSieve(n)
-    ps = ps[1:] #2 is obviously not gonna work out
+    ps = primeSieve(n)[1:] # 2 is obviously not gonna work out
     pairGraph = {}
     for a,b in itertools.combinations(ps,2):
-        ab = int("%d%d"%(a,b))
-        ba = int("%d%d"%(b,a))
-        if (isPrime(ab) and isPrime(ba)):
+        if (isPrime(int("%d%d"%(a,b))) and isPrime(int("%d%d"%(b,a)))):
                 pairGraph[a] = pairGraph.get(a,set()) | {b}
                 pairGraph[b] = pairGraph.get(b,set()) | {a}
-    # We now have a graph and need to find a 5 clique (k5)
-
+    # We now have a graph and need to find a k-clique
     changes = True
-    while changes:
+    while changes: # Trim the graph s.t. only the clique remains (its p sparse)
         changes = False
         for v in pairGraph.keys():
-            pairGraph[v] = {n for n in pairGraph[v] if
+            newneighbors = {n for n in pairGraph[v] if
                             len(pairGraph.get(n,set()) & pairGraph[v]) >= k-2 }
-            # if intersection < k-2 then n,v don't share a k clique
+            # if intersection < k-2 then n,v don't share a k-clique
+            if pairGraph[v] != newneighbors:
+                pairGraph[v] = newneighbors
+                changes = True
             if len(pairGraph[v]) < k-1:
                 pairGraph.pop(v)
                 changes = True
-
-    return sum(pairGraph.keys())
-
-"""
-    pairs = set()
-    for k in pairGraph.keys():
-        for v in pairGraph[k]:
-            if k<v:
-                pairs.add((k,v))
-            else:
-                pairs.add((v,k))
-    pairs = [set(a) for a in pairs]
-
-    print "finding quads on {} pairs".format(len(pairs))
-
-    quads = []
-    for a,b in itertools.combinations(pairs,2):
-        if len(a.intersection(b))>0:
-            continue
-        if any(a.union(b) <= q for q in quads):
-            continue
-        a1,a2 = a
-        b1,b2 = b
-        concat_permutations = [(a1,b1),(b1,a1), (a1,b2),(b2,a1),
-                               (a2,b1),(b1,a2), (a2,b2),(b2,a2)]
-        if all(isPrime(int("%d%d"%(x,y))) for x,y in concat_permutations):
-            quads.append(a.union(b))
-    print '{} quads'.format(len(quads))
-    print quads
-    quintuples = []
-    for a,b in itertools.combinations(quads,2):
-        if not len(a.intersection(b))==3:
-            continue
-        x,y = a^b
-        if isPrime(int("%d%d"%(x,y))) and isPrime(int("%d%d"%(y,x))):
-            quintuples.append(a.union(b))
-
-    return quintuples
-"""
+    if len(pairGraph) == k:
+        return sum(pairGraph.keys())
+    else: # not obvious answer - check by hand
+        return pairGraph
