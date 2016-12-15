@@ -99,10 +99,6 @@ def is_pent(x):
     return ((1+(24 * x + 1)**.5)/6).is_integer()
 
 
-
-
-
-
 def p45(start = 144):
     """
     triangle    Tn = n( n + 1)/2  <->   0 = n**2  + n - 2Tn

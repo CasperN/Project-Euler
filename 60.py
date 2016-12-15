@@ -174,6 +174,140 @@ def p56():
     """
     m = 0
     for a in range(100):
-        for b in range(a,100):
+        for b in range(100):
             m = max(m, sum(int(s) for s in str(a**b)))
     return m
+
+def p57():
+    """
+    square root of two is the limit of this fractional series
+    of the first 1000 points, how many has more digits in the numerator
+    """
+    #1 calculate recurisve part
+    a,b = 1,2 # first fraction
+    count = 0
+    for i in range(1,1000):
+        a,b = nextab(a,b)
+        print(a+b,b)
+        digits_num = len(str(a+b)) #unsimplified
+        digits_den = len(str(b))
+        count += (digits_num > digits_den)
+    return count
+
+def nextab(a,b):
+    return b, 2*b+a
+
+def p58():
+    """
+    Arrange the natural numbers in a counterclockwise spiral and observe
+    squares centered at 1. At what square side length does the percentage of
+    primes along the main diagonals fall below 10%
+    """
+    n = 1           # square of length 2n-1
+    numprimes = 3.0   # 3,5,7
+    while numprimes/(4*n+1) >= .1: # 4n+1 is number of entries on main diagonals
+        n += 1
+        corners = [(2*n + 1)**2 - x*n for x in (2,4,6)] # last corner is square numbers
+        numprimes += sum(isPrime(c) for c in corners)
+    return 2*n + 1
+
+
+def p59():
+    """"""
+
+    with open('p059_cipher.txt','r') as f:
+        raw = [tobin(x) for x in f.read().strip().split(',')]
+
+    cyphers = []
+    for key in itertools.permutations('abcdefghijklmnopqrstuvwxyz',3):
+        junk = 0
+        keybin = [tobin(ord(k)) for k in key]
+        text = ''
+        for i, x in enumerate(raw):
+            c = chr(int(xor(keybin[i%3],x),2))
+            text += c
+            junk += (c in '{\}|&!`~/=?<>$%-^*(+);@#')
+            if junk >= 20:
+                break
+
+        if junk < 20:
+            cyphers.append((key,junk,text))
+    cyphers.sort(key = lambda x:x[1])
+    return cyphers
+
+def tobin(x):
+    return bin(256+int(x))[3:]
+
+def xor(a,b):
+    """
+    a xor b, where they are both 8 bit binary strings
+    """
+    return ''.join(str(x) for x in (int   (bool(int(i)) != bool(int(j)))
+                                for i,j in zip(a,b)))
+
+
+def p60(n=10000,k=5):
+    """
+    Find the lowest sum of a set of 5 primes for which the concatination of
+    and two primes will result in a prime
+    """
+    ps = primeSieve(n)
+    ps = ps[1:] #2 is obviously not gonna work out
+    pairGraph = {}
+    for a,b in itertools.combinations(ps,2):
+        ab = int("%d%d"%(a,b))
+        ba = int("%d%d"%(b,a))
+        if (isPrime(ab) and isPrime(ba)):
+                pairGraph[a] = pairGraph.get(a,set()) | {b}
+                pairGraph[b] = pairGraph.get(b,set()) | {a}
+    # We now have a graph and need to find a 5 clique (k5)
+
+    changes = True
+    while changes:
+        changes = False
+        for v in pairGraph.keys():
+            pairGraph[v] = {n for n in pairGraph[v] if
+                            len(pairGraph.get(n,set()) & pairGraph[v]) >= k-2 }
+            # if intersection < k-2 then n,v don't share a k clique
+            if len(pairGraph[v]) < k-1:
+                pairGraph.pop(v)
+                changes = True
+
+    return sum(pairGraph.keys())
+
+"""
+    pairs = set()
+    for k in pairGraph.keys():
+        for v in pairGraph[k]:
+            if k<v:
+                pairs.add((k,v))
+            else:
+                pairs.add((v,k))
+    pairs = [set(a) for a in pairs]
+
+    print "finding quads on {} pairs".format(len(pairs))
+
+    quads = []
+    for a,b in itertools.combinations(pairs,2):
+        if len(a.intersection(b))>0:
+            continue
+        if any(a.union(b) <= q for q in quads):
+            continue
+        a1,a2 = a
+        b1,b2 = b
+        concat_permutations = [(a1,b1),(b1,a1), (a1,b2),(b2,a1),
+                               (a2,b1),(b1,a2), (a2,b2),(b2,a2)]
+        if all(isPrime(int("%d%d"%(x,y))) for x,y in concat_permutations):
+            quads.append(a.union(b))
+    print '{} quads'.format(len(quads))
+    print quads
+    quintuples = []
+    for a,b in itertools.combinations(quads,2):
+        if not len(a.intersection(b))==3:
+            continue
+        x,y = a^b
+        if isPrime(int("%d%d"%(x,y))) and isPrime(int("%d%d"%(y,x))):
+            quintuples.append(a.union(b))
+
+    return quintuples
+"""
