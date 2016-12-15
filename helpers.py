@@ -28,6 +28,7 @@ def primegenerator():
     """
     generates prime number (in order)
     Its horribly inefficient and should be updated
+    use pyprimes
     """
     yield 2
     primes = [2]
@@ -137,3 +138,16 @@ def primativePythagoreanTriples(limit=None):
         for triple in m:
             yield triple
         m = np.dot(m, uad)
+
+
+def gcd(x,y):
+    """
+    Euclid's Algorithm for finding greatest common divisor
+    """
+    assert x >= y
+    #print "{}\t=\t{}\t*\t{}\t+\t{}".format(x,x/y,y,x%y)
+    n = x%y # note n < y
+    if x%y == 0:
+        return y
+    else:
+        return gcd(y,n)

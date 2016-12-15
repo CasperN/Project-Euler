@@ -54,6 +54,31 @@ def p32():
 
 def p33():
     """
+    We call a fraction curious if the digits have the property xy/xz = y/z
+    or yx/zx = y/z (and x != 0 in the latter case as that would be trivial).
+    There are 4 nontrivial curious fractions of two digits, less than 1 in value
+    Find the value of the denominator of the product in lowest common terms
+    """
+    fracs = set()
+    for den in range(2,10):
+        for num in range(1,den):
+            for x in range(10):
+                for a,b,c,d in ((num, x ,den, x ),
+                                ( x ,num,den, x ),
+                                (num, x , x ,den),
+                                ( x ,num, x ,den)):
+                    if (b == d == 0) or (c == d == 0) or (a == c == 0):
+                        continue
+                    Num,Den = ("%d%d %d%d"%(a,b,c,d)).split(' ')
+                    if float(num)/den == float(Num)/float(Den):
+                        print('{}/{} = {}/{}'.format(num,den,Num,Den))
+                        fracs.add((num,den))
+    product_num = reduce(lambda x,y: x*y,(x[0] for x in fracs) )
+    product_den = reduce(lambda x,y: x*y,(x[1] for x in fracs) )
+    return product_den / gcd(product_den,product_num)
+
+def p34():
+    """
     Find the sum of all numbers which are equal to the sum of the factorial of
     their digits. Note: as 1! = 1 and 2! = 2 are not sums they are not included.
     """
@@ -67,7 +92,7 @@ def p33():
             s += num
     return s
 
-def p34(n = 1000000):
+def p35(n = 1000000):
     """
     The number, 197, is called a circular prime because all rotations of the
     digits: 197, 971, and 719, are themselves prime. There are thirteen such
