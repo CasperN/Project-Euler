@@ -46,7 +46,7 @@ def p61_helper(start,end,kgons):
                     return [ num ] + res
     return None
 
-def p61(k = 5):
+def p62(k = 5):
     """
     Find the smallest cube for which exactly 5 permutations are cubes
     """
@@ -56,3 +56,18 @@ def p61(k = 5):
         digits[x] = digits.get(x,[]) + [i**3]
         if len(digits[x]) == k:
             return digits[x]
+
+def p63():
+    """
+    how many n digit positive numbers exist that are also an nth power
+    """
+    count = 0
+    for n in range(1000):
+        for i in itertools.count(1):
+            digits = len(str(i**n))
+            if digits == n:
+                count += 1
+                print "%d: %d"%(n,i**n)
+            elif digits > n:
+                break
+    return count
