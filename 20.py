@@ -4,13 +4,15 @@ from scipy import special as ss
 import datetime as dt
 from datetime import datetime
 from datetime import timedelta
+from functools import reduce
 
 
-def compare_to_max(cells,m):
+def compare_to_max(cells, m):
     # multiplies cells together, compares to existing max and returns greatest
     assert len(cells) == 4
-    s = reduce(lambda x,y,: x*y, cells)
-    return max(s,m)
+    s = reduce(lambda x, y,: x * y, cells)
+    return max(s, m)
+
 
 def p11():
     """
@@ -37,36 +39,41 @@ def p11():
 20 69 36 41 72 30 23 88 34 62 99 69 82 67 59 85 74 04 36 16
 20 73 35 29 78 31 90 01 74 31 49 71 48 86 81 16 23 57 05 54
 01 70 54 71 83 51 54 69 16 92 33 48 61 43 52 01 89 19 67 48"""
-    grid = np.array([ [int(n) for n   in row.split(' ')]
-                              for row in raw_grid.split('\n')])
+    grid = np.array([[int(n) for n in row.split(" ")] for row in raw_grid.split("\n")])
     supremum = 0
-    for i,j in itertools.product(range(20),range(20)): # 20x20 grid
-        adjacents = [] # columns, rows, diagonal downright, diagonal downleft
-        if i<=16          : adjacents.append( grid[i:i+4, j])
-        if j<=16          : adjacents.append( grid[i, j:j+4])
-        if i<=16 and j<=16: adjacents.append([grid[i+a, j+a] for a in range(4)])
-        if i<=16 and j>=4 : adjacents.append([grid[i+a, j-a] for a in range(4)])
+    for i, j in itertools.product(list(range(20)), list(range(20))):  # 20x20 grid
+        adjacents = []  # columns, rows, diagonal downright, diagonal downleft
+        if i <= 16:
+            adjacents.append(grid[i : i + 4, j])
+        if j <= 16:
+            adjacents.append(grid[i, j : j + 4])
+        if i <= 16 and j <= 16:
+            adjacents.append([grid[i + a, j + a] for a in range(4)])
+        if i <= 16 and j >= 4:
+            adjacents.append([grid[i + a, j - a] for a in range(4)])
         for adj in adjacents:
             supremum = compare_to_max(adj, supremum)
     return supremum
 
-def p12(n = 500):
+
+def p12(n=500):
     """
     What is the value of the first triangle number
     to have over five hundred divisors?
     """
-    t,divisors = 1,{1}
+    t, divisors = 1, {1}
     while len(divisors) < n:
         t += 1
-        t_num = sum(range(t+1))
-        curr, small_divs, big_divs = 2,[1], [t_num]
+        t_num = sum(range(t + 1))
+        curr, small_divs, big_divs = 2, [1], [t_num]
         while curr < big_divs[-1]:
-            curr +=1
+            curr += 1
             if t_num % curr == 0:
                 small_divs.append(curr)
-                big_divs.append(t_num/curr)
-        divisors = set(small_divs+big_divs)
-        print "t:{}\ttri:{}\tdivs:{}".format(t,t_num,len(divisors))
+                big_divs.append(t_num / curr)
+        divisors = set(small_divs + big_divs)
+        print("t:{}\ttri:{}\tdivs:{}".format(t, t_num, len(divisors)))
+
 
 def p13():
     """
@@ -173,8 +180,9 @@ def p13():
         72107838435069186155435662884062257473692284509516
         20849603980134001723930671666823555245252804609722
         53503534226472524250874054075591789781264330331690"""
-    numbers = [int(x) for x in rawnumbers.strip(' ').split('\n')]
+    numbers = [int(x) for x in rawnumbers.strip(" ").split("\n")]
     return str(sum(numbers))[:10]
+
 
 def p14():
     """
@@ -182,33 +190,37 @@ def p14():
     which starting number under 1000000 produces the longest sequence
     """
     paths = {}
-    for i in range(1,1000000):
-        paths,steps = findpathlength(paths,i)
-    return max(paths.items(), key = lambda x:x[1])
+    for i in range(1, 1000000):
+        paths, steps = findpathlength(paths, i)
+    return max(list(paths.items()), key=lambda x: x[1])
 
-def findpathlength(paths,origin):
+
+def findpathlength(paths, origin):
     steps, i = 0, origin
     while i != 1:
         if i in paths:
             steps += paths[i]
             break
-        if i%2 == 0:
-            i = i/2
+        if i % 2 == 0:
+            i = i / 2
         else:
-            i = 3*i + 1
+            i = 3 * i + 1
         steps += 1
     paths[origin] = steps
     return paths, steps
 
-def p15(latticesize = 20):
+
+def p15(latticesize=20):
     """
     suppose you have a 20*20 lattice. Only being able to move right and down,
     how many routes are there from the top left to bottom right corners.
     """
-    return ss.binom(2*latticesize, latticesize)
+    return ss.binom(2 * latticesize, latticesize)
+
 
 def p16():
-    return  sum(int(d) for d in str(2**1000))
+    return sum(int(d) for d in str(2 ** 1000))
+
 
 def p17():
     """
@@ -216,35 +228,64 @@ def p17():
     were written out in words, how many letters would be used?
     NOTE: Do not count spaces or hyphens.
     """
-    teens =   {'11':'Eleven','12':'Twelve','13':'Thirteen','14':'Fourteen',
-               '15':'Fifteen','16':'Sixteen','17':'Seventeen','18':'Eighteen',
-               '19':'Nineteen'}
-    numbers = {'0':'','1':'One','2':'Two','3':'Three','4':'Four','5':'Five',
-               '6':'Six','7':'Seven','8':'Eight','9':'Nine'}
-    tys =     {'0':'','1':'Ten','2':'Twenty','3':'Thirty','4':'Forty','5':'Fifty',
-               '6':'Sixty','7':'Seventy','8':'Eighty','9':'Ninety'}
-    total = ''
-    for i in range(1,1000):
+    teens = {
+        "11": "Eleven",
+        "12": "Twelve",
+        "13": "Thirteen",
+        "14": "Fourteen",
+        "15": "Fifteen",
+        "16": "Sixteen",
+        "17": "Seventeen",
+        "18": "Eighteen",
+        "19": "Nineteen",
+    }
+    numbers = {
+        "0": "",
+        "1": "One",
+        "2": "Two",
+        "3": "Three",
+        "4": "Four",
+        "5": "Five",
+        "6": "Six",
+        "7": "Seven",
+        "8": "Eight",
+        "9": "Nine",
+    }
+    tys = {
+        "0": "",
+        "1": "Ten",
+        "2": "Twenty",
+        "3": "Thirty",
+        "4": "Forty",
+        "5": "Fifty",
+        "6": "Sixty",
+        "7": "Seventy",
+        "8": "Eighty",
+        "9": "Ninety",
+    }
+    total = ""
+    for i in range(1, 1000):
         digits = str(i).zfill(3)
         word = numbers[digits[0]]
-        if word != '' :
-            word += 'Hundred'
-            if digits[1:] != '00':
-                word +='And'
-        tens = ''
+        if word != "":
+            word += "Hundred"
+            if digits[1:] != "00":
+                word += "And"
+        tens = ""
         if digits[1:] in teens:
             word += teens[digits[1:]]
         else:
             word += tys[digits[1]] + numbers[digits[2]]
         total += word
-    total += 'OneThousand'
+    total += "OneThousand"
     return len(total)
+
 
 def p18():
     """
     Find the maximimym total path from top to bottom of the triangle below:
     """
-    triangle='''75
+    triangle = """75
         95 64
         17 47 82
         18 35 87 10
@@ -258,33 +299,33 @@ def p18():
         70 11 33 28 77 73 17 78 39 68 17 57
         91 71 52 38 17 14 91 43 58 50 27 29 48
         63 66 04 68 89 53 67 30 73 16 69 87 40 31
-        04 62 98 27 23 09 70 98 73 93 38 53 60 04 23'''
-    triangle = [[x for x in t.split(' ') if x != '']
-                            for t in triangle.split('\n')]
+        04 62 98 27 23 09 70 98 73 93 38 53 60 04 23"""
+    triangle = [[x for x in t.split(" ") if x != ""] for t in triangle.split("\n")]
     sup = 0
     pathlengths = []
-    for i in range(2**len(triangle)):
-        path = format(i,'0{}b'.format(len(triangle)))
-        psum, place = 0,0
+    for i in range(2 ** len(triangle)):
+        path = format(i, "0{}b".format(len(triangle)))
+        psum, place = 0, 0
         for choice, row in zip((int(p) for p in path), triangle):
             psum += int(row[place])
             place += choice
         pathlengths.append(psum)
     return max(pathlengths)
 
+
 def p19():
     """
     How many Sundays fell on the first of the month during
     the twentieth century (1 Jan 1901 to 31 Dec 2000)?
     """
-    t   = datetime.strptime('31121900', '%d%m%Y').date()
-    end = datetime.strptime('31122000', '%d%m%Y').date()
+    t = datetime.strptime("31121900", "%d%m%Y").date()
+    end = datetime.strptime("31122000", "%d%m%Y").date()
     sundays_on_the_first = 0
     while t < end:
         if t.day == 1:
-            sundays_on_the_first +=1
-            print str(t) + ' day:' + str(t.weekday())
-        t += timedelta(days = 7)
+            sundays_on_the_first += 1
+            print(str(t) + " day:" + str(t.weekday()))
+        t += timedelta(days=7)
     return sundays_on_the_first
 
 

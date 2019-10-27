@@ -1,4 +1,6 @@
 from helpers import primegenerator
+from functools import reduce
+
 
 def problem1():
     """
@@ -6,8 +8,9 @@ def problem1():
     """
     return sum(i for i in range(1000) if i % 5 == 0 or i % 3 == 0)
 
+
 def problem2():
-    s, f_old, f_new = 0,0,1
+    s, f_old, f_new = 0, 0, 1
     while f_new < 4000000:
         if f_new % 2 == 0:
             s += f_new
@@ -16,7 +19,8 @@ def problem2():
         f_old = temp
     return s
 
-def problem3(number = 600851475143):
+
+def problem3(number=600851475143):
     """
     The prime factors of 13195 are 5, 7, 13 and 29.
     What is the largest prime factor of the number 600851475143 ?
@@ -28,11 +32,12 @@ def problem3(number = 600851475143):
         if number % p == 0:
             number /= p
             factors.append(p)
-            print"{} and {}".format(p,number)
+            print("{} and {}".format(p, number))
         else:
-            p+=1
+            p += 1
     factors.append(number)
-    return(max(factors))
+    return max(factors)
+
 
 def problem4():
     """
@@ -41,26 +46,27 @@ def problem4():
     Find the largest palindrome made from the product of two 3-digit numbers.
     """
     for n in range(1000):
-        for i in range(n/2 + n%2): #first half round up
+        for i in range(n / 2 + n % 2):  # first half round up
             a = 999 + i - n
             b = 999 - i
-            if str(a*b) == ''.join(reversed(str(a*b))):
-                return a,b
+            if str(a * b) == "".join(reversed(str(a * b))):
+                return a, b
     assert False
+
 
 def problem6():
     """
     Find the difference between the sum of the squares of the first one hundred
     natural numbers and the square of the sum.
     """
-    s,ss = 0,0
-    for i in range(1,101):
-        s+=i
-        ss += i**2
-    return s**2 - ss
+    s, ss = 0, 0
+    for i in range(1, 101):
+        s += i
+        ss += i ** 2
+    return s ** 2 - ss
 
 
-def problem7(n = 10001):
+def problem7(n=10001):
     """
     What is the 10 001st prime number?
     """
@@ -71,7 +77,7 @@ def problem7(n = 10001):
 
 
 def problem8():
-    number = '''73167176531330624919225119674426574742355349194934
+    number = """73167176531330624919225119674426574742355349194934
     96983520312774506326239578318016984801869478851843
     85861560789112949495459501737958331952853208805511
     12540698747158523863050715693290963295227443043557
@@ -91,40 +97,42 @@ def problem8():
     84580156166097919133875499200524063689912560717606
     05886116467109405077541002256983155200055935729725
     71636269561882670428252483600823257530420752963450
-    '''
-    number = number.replace(' ','').replace('\n','')
+    """
+    number = number.replace(" ", "").replace("\n", "")
     sup = 0
     for i in range(len(number) - 13):
-        subsequence = number[i:i+13]
-        prod = reduce(lambda x,y: int(x)*int(y),subsequence )
+        subsequence = number[i : i + 13]
+        prod = reduce(lambda x, y: int(x) * int(y), subsequence)
         if prod > sup:
-            sup  = prod
+            sup = prod
     return sup
+
 
 def problem9():
     """
     There exists exactly one Pythagorean triplet for which a + b + c = 1000.
     Find the product abc.
     """
-    a,b,c = 0,0,0
-    for i in range(2,1000):         #avoid 0
+    a, b, c = 0, 0, 0
+    for i in range(2, 1000):  # avoid 0
         breaker = False
-        for j in range(1,i/2 + i%2):
+        for j in range(1, i / 2 + i % 2):
             a = i - j
             b = j
             c = 1000 - i
-            if a**2 + b**2 == c**2:
+            if a ** 2 + b ** 2 == c ** 2:
                 breaker = True
                 break
         if breaker:
             break
-    return a*b*c
+    return a * b * c
 
-def problem10(n = 2000000):
+
+def problem10(n=2000000):
     """
     Find the sum of all the primes below 2 million
     """
-    tot,prime, pg = 0,0, primegenerator()
+    tot, prime, pg = 0, 0, primegenerator()
     while prime < n:
         tot += prime
         prime = next(pg)
